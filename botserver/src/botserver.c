@@ -4,7 +4,7 @@
 #include <kore/kore.h>
 #include <kore/http.h>
 
-#define scmd "/var/app/bots6 "
+#define scmd "/var/app/bots6/build/icetea_s6 "
 #define bgdd " >> /dev/null 2>&1 &"
 
 int	page(struct http_request *);
