@@ -5,3 +5,5 @@ botserver.so
 assets.h
 cert
 conf/botserver.conf
+conf/prod.conf
+note.txt
