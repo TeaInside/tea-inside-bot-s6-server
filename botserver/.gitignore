@@ -1,0 +1,7 @@
+*.o
+.flavor
+.objs
+botserver.so
+assets.h
+cert
+conf/botserver.conf
