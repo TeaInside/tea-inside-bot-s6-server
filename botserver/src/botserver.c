@@ -1,18 +1,61 @@
 
+#include <stdlib.h>
 #include <string.h>
 #include <kore/kore.h>
 #include <kore/http.h>
 
+#define scmd "/var/app/bots6 "
+#define bgdd " >> /dev/null 2>&1 &"
+
 int	page(struct http_request *);
 void get_body(struct http_request *req, char *dest);
+char* escapeshellarg(char* str);
 
 int
 page(struct http_request *req)
 {
-	char body[req->content_length];
+	char body[req->content_length];	
 	get_body(req, body);
-	http_response(req, 200, body, req->content_length);
+	
+	char *param = escapeshellarg(body);
+	char cmd[sizeof(scmd) + sizeof(bgdd) - 2 + strlen(param)];
+	sprintf(cmd, scmd "%s" bgdd, param);
+
+	system(cmd);
+
+	http_response(req, 200, "OK", 2);
 	return (KORE_RESULT_OK);
+}
+
+
+char*
+escapeshellarg(char* str) {
+     char *escStr;
+    int i,
+        count = strlen(str),
+            ptr_size = count+3;
+
+    escStr = (char *) calloc(ptr_size, sizeof(char));
+    if (escStr == NULL) {
+        return NULL;
+    }
+    sprintf(escStr, "'");
+
+    for(i=0; i<count; i++) {
+        if (str[i] == '\'') {
+                    ptr_size += 3;
+            escStr = (char *) realloc(escStr,ptr_size * sizeof(char));
+            if (escStr == NULL) {
+                return NULL;
+            }
+            sprintf(escStr, "%s'\\''", escStr);
+        } else {
+            sprintf(escStr, "%s%c", escStr, str[i]);
+        }
+    }
+
+    sprintf(escStr, "%s%c", escStr, '\'');
+    return escStr;
 }
 
 
